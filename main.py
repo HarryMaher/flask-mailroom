@@ -21,12 +21,18 @@ def create():
 	if request.method == "GET":
 		return render_template('create_donations.jinja2')
 	elif request.method == "POST":
-		donor_name = session.get('donor_name','anonymous')
-		donation_amt = session.get('donation',0)
+		donor_name = request.form['donor_name']
+		donation_amt = request.form['donation']
+
+		curr_donor = Donor(name=donor_name)
+		curr_donor.save()
+		Donation(donor=curr_donor, value=int(donation_amt)).save()
+
 		## somehow post to stuff
 		## do something to try posting donor name
 		## elif donor name is not unique, then return text informing user.
-		return render_template('donations.jinja2')
+		donations = Donation.select()
+		return render_template('donations.jinja2', donations = donations)
 
 @app.route('/save', methods = ['POST'])
 def save():
